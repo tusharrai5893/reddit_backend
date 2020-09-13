@@ -19,8 +19,8 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_id;
-    @NotBlank(message = "Post Can't be Empty, Please Fill")
+    private Long post_Id;
+    @NotBlank(message = "Post Can't be Empty")
     private String post_name;
     @Nullable
     private String url;

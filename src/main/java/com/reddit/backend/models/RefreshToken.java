@@ -4,23 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.Instant;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "V_Token")
-public class VerificationToken {
+public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long v_tokenId;
-    private String tokenString;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
-    private Instant expiryDate;
+    private Long r_Token_Id;
+    private String r_Token;
+    private Instant createdDate;
 
 }
