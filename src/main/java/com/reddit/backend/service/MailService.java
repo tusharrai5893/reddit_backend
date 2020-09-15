@@ -8,6 +8,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,11 +19,12 @@ public class MailService {
     private final MailContentBuilder mailContentBuilder;
     private final JavaMailSender javaMailSender;
 
+    @Async
     void sendMail(NotificationEmail notificationEmail) {
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-            mimeMessageHelper.setTo(notificationEmail.getRecipient());
             mimeMessageHelper.setFrom("customMail@email.com");
+            mimeMessageHelper.setTo(notificationEmail.getRecipient());
             mimeMessageHelper.setSubject(notificationEmail.getSubject());
             mimeMessageHelper.setText(mailContentBuilder.buildMail(notificationEmail.getBody()));
         };
