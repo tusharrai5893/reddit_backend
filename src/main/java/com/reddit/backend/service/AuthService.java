@@ -1,5 +1,6 @@
 package com.reddit.backend.service;
 
+import com.reddit.backend.dto.LoginRequest;
 import com.reddit.backend.dto.RegisterRequest;
 import com.reddit.backend.exceptions.RedditCustomException;
 import com.reddit.backend.models.NotificationEmail;
@@ -8,6 +9,8 @@ import com.reddit.backend.models.VerificationToken;
 import com.reddit.backend.repository.UserRepo;
 import com.reddit.backend.repository.VTokenRepo;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class AuthService {
     private  final UserRepo userRepo;
     private  final VTokenRepo vTokenRepo;
     private  final MailService mailService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
@@ -82,5 +86,12 @@ public class AuthService {
         }
 
 
+    }
+
+    public void login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getUserName(),
+                loginRequest.getPassword()
+        ));
     }
 }
