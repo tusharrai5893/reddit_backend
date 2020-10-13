@@ -3,6 +3,7 @@ package com.reddit.backend.service;
 import com.reddit.backend.dto.LoginRequest;
 import com.reddit.backend.dto.RegisterRequest;
 import com.reddit.backend.exceptions.RedditCustomException;
+import com.reddit.backend.mailConfig.MailService;
 import com.reddit.backend.models.NotificationEmail;
 import com.reddit.backend.models.User;
 import com.reddit.backend.models.VerificationToken;
@@ -61,6 +62,7 @@ public class AuthService {
         return token;
     }
 
+    @Transactional
     public void mailVerifyAccount(String token) {
         Optional<VerificationToken> tokenString = vTokenRepo.findByTokenString(token);
         tokenString.orElseThrow(()-> new RedditCustomException("Invalid Token Fetched from Repo"));
@@ -71,7 +73,7 @@ public class AuthService {
 
     }
 
-    @Transactional
+
     private void getUserAndEnabled(VerificationToken tokenString) {
         try {
             String userName = tokenString.getUser().getUserName();

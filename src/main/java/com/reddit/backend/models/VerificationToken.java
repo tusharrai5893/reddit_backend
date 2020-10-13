@@ -19,7 +19,7 @@ public class VerificationToken {
     private Long v_tokenId;
     private String tokenString;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     private User user;
     private Instant expiryDate;
 

@@ -1,4 +1,4 @@
-package com.reddit.backend.service;
+package com.reddit.backend.mailConfig;
 
 import com.reddit.backend.exceptions.RedditCustomException;
 import com.reddit.backend.models.NotificationEmail;
@@ -20,7 +20,7 @@ public class MailService {
     private final JavaMailSender javaMailSender;
 
     @Async
-    void sendMail(NotificationEmail notificationEmail) {
+     public void sendMail(NotificationEmail notificationEmail) {
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
             mimeMessageHelper.setFrom("customMail@email.com");

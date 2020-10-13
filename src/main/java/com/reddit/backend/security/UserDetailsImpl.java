@@ -1,4 +1,4 @@
-package com.reddit.backend.service;
+package com.reddit.backend.security;
 
 import com.reddit.backend.models.User;
 import lombok.AllArgsConstructor;

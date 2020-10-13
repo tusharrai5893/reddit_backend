@@ -1,4 +1,4 @@
-package com.reddit.backend.service;
+package com.reddit.backend.mailConfig;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ public class MailContentBuilder {
 
     private final TemplateEngine templateEngine;
 
-    String buildMail(String message) {
+    protected String buildMail(String message) {
         Context context = new Context();
         context.setVariable("message", message);
         return templateEngine.process("mailTemplate", context);
