@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
 
     private final UserRepo userRepo;
@@ -22,7 +21,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
         Optional<User> singleUser = userRepo.findByUserName(userName);
         User user1 = singleUser.orElseThrow(() -> new UsernameNotFoundException("No User found for Username : " + userName));
 
-        return (UserDetails) new UserDetailsImpl(user1);
+
+        return new UserDetailsImpl(user1);
+
     }
 
 }

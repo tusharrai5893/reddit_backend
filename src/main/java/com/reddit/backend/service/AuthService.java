@@ -1,5 +1,6 @@
 package com.reddit.backend.service;
 
+import com.reddit.backend.dto.JwtAuthResDto;
 import com.reddit.backend.dto.LoginRequest;
 import com.reddit.backend.dto.RegisterRequest;
 import com.reddit.backend.exceptions.RedditCustomException;
@@ -9,9 +10,12 @@ import com.reddit.backend.models.User;
 import com.reddit.backend.models.VerificationToken;
 import com.reddit.backend.repository.UserRepo;
 import com.reddit.backend.repository.VTokenRepo;
+import com.reddit.backend.security.JwtProviderService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,7 @@ public class AuthService {
     private  final VTokenRepo vTokenRepo;
     private  final MailService mailService;
     private final AuthenticationManager authenticationManager;
+    private final JwtProviderService jwtProviderService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
@@ -90,10 +95,14 @@ public class AuthService {
 
     }
 
-    public void login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public JwtAuthResDto login(LoginRequest loginRequest) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getUserName(),
                 loginRequest.getPassword()
         ));
+
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String newToken = jwtProviderService.generateJWToken(authenticate);
+        return new JwtAuthResDto(newToken,loginRequest.getUserName());
     }
 }

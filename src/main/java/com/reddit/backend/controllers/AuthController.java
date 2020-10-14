@@ -1,5 +1,6 @@
 package com.reddit.backend.controllers;
 
+import com.reddit.backend.dto.JwtAuthResDto;
 import com.reddit.backend.dto.LoginRequest;
 import com.reddit.backend.dto.RegisterRequest;
 import com.reddit.backend.service.AuthService;
@@ -29,8 +30,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest){
-        authService.login(loginRequest);
+    public JwtAuthResDto login(@RequestBody LoginRequest loginRequest){
+        return authService.login(loginRequest);
     }
+
+
 
 }
