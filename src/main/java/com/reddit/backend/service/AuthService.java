@@ -28,10 +28,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AuthService {
 
-    private  final PasswordEncoder passwordEncoder;
-    private  final UserRepo userRepo;
-    private  final VTokenRepo vTokenRepo;
-    private  final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepo userRepo;
+    private final VTokenRepo vTokenRepo;
+    private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProviderService jwtProviderService;
 
@@ -39,7 +39,7 @@ public class AuthService {
     public void signup(RegisterRequest registerRequest) {
         User user = new User();
         user.setEmail(registerRequest.getEmail());
-        user.setUserName(registerRequest.getUsername());
+        user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setCreatedDate(Instant.now());
         user.setEnabled(false);
@@ -50,12 +50,12 @@ public class AuthService {
 
         mailService.sendMail(new NotificationEmail("Activation mail is sent",
                 user.getEmail(),
-                "Click the link to activate your account for User = " + user.getEmail() +" "+
+                "Click the link to activate your account for User = " + user.getEmail() + " " +
                         "http://localhost:8080/api/auth/verifyAccount/" + randomToken));
 
     }
 
-    private  String generateVerificationToken(User user) {
+    private String generateVerificationToken(User user) {
         String token = UUID.randomUUID().toString();
 
         VerificationToken verificationToken = new VerificationToken();
@@ -70,24 +70,23 @@ public class AuthService {
     @Transactional
     public void mailVerifyAccount(String token) {
         Optional<VerificationToken> tokenString = vTokenRepo.findByTokenString(token);
-        tokenString.orElseThrow(()-> new RedditCustomException("Invalid Token Fetched from Repo"));
-        
+        tokenString.orElseThrow(() -> new RedditCustomException("Invalid Token Fetched from Repo"));
+
         // get the user and make him enabled
         getUserAndEnabled(tokenString.get());
-        
+
 
     }
 
 
     private void getUserAndEnabled(VerificationToken tokenString) {
         try {
-            String userName = tokenString.getUser().getUserName();
-            User user = userRepo.findByUserName(userName)
-                    .orElseThrow(()->new RedditCustomException("User not found "+ userName));
+            String userName = tokenString.getUser().getUsername();
+            User user = userRepo.findByUsername(userName)
+                    .orElseThrow(() -> new RedditCustomException("User not found " + userName));
             user.setEnabled(true);
             userRepo.save(user);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 
         }
@@ -97,12 +96,12 @@ public class AuthService {
 
     public JwtAuthResDto login(LoginRequest loginRequest) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getUserName(),
+                loginRequest.getUsername(),
                 loginRequest.getPassword()
         ));
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String newToken = jwtProviderService.generateJWToken(authenticate);
-        return new JwtAuthResDto(newToken,loginRequest.getUserName());
+        return new JwtAuthResDto(newToken, loginRequest.getUsername());
     }
 }

@@ -9,14 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequestMapping("/api/auth")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
+    @PostMapping(value = "/signup")
     public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
         authService.signup(registerRequest);
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.OK);
@@ -24,16 +24,15 @@ public class AuthController {
     }
 
     @GetMapping(value = "/verifyAccount/{token}")
-    public ResponseEntity<String> verifyAccount(@PathVariable String token){
+    public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.mailVerifyAccount(token);
         return ResponseEntity.ok("<h2>User Activated Successfully !!</h2>");
     }
 
-    @PostMapping("/login")
-    public JwtAuthResDto login(@RequestBody LoginRequest loginRequest){
+    @PostMapping(value = "/login")
+    public JwtAuthResDto login(@RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
-
 
 
 }

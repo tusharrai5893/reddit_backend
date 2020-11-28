@@ -1,6 +1,7 @@
 package com.reddit.backend.security;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,49 +19,52 @@ import java.io.IOException;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private JwtProviderService jwtProviderService;
-    private UserDetailsService userDetailsService;
+    private final JwtProviderService jwtProviderService;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
+        try {
+            //Parsing JWT from Oncoming Request
+            String jwtFromComingRequest = null;
 
-        //Parsing JWT from Oncoming Request
-        String jwtFromComingRequest = getJwtFromComingRequest(httpServletRequest);
+            String containBearerToken = httpServletRequest.getHeader("Authorization");
 
-        // Validating Jwt with public key , getting certificate from it
-        boolean validateJwtToken = jwtProviderService.validateJwtToken(jwtFromComingRequest);
+            if (null != containBearerToken && StringUtils.hasText("containBearerToken")) {
+                jwtFromComingRequest = containBearerToken.substring(7);
+            }
 
-        // Extracting Username from UserDetails from its serviceImpl , adding it to Context
 
-        if(StringUtils.hasText(jwtFromComingRequest) && validateJwtToken){
-            String usernameFromJwt = jwtProviderService.getUsernameFromJwt(jwtFromComingRequest);
+            // Validating Jwt with public key , getting certificate from it
+            boolean validateJwtToken = jwtProviderService.validateJwtToken(jwtFromComingRequest);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromJwt);
+            // Extracting Username from UserDetails from its serviceImpl , adding it to Context
 
-            UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(
-                    userDetails,null,userDetails.getAuthorities()
-            );
+            if (StringUtils.hasText(jwtFromComingRequest) && validateJwtToken) {
+                String usernameFromJwt = jwtProviderService.getUsernameFromJwt(jwtFromComingRequest);
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromJwt);
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
+
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+
+        } catch (Exception e) {
+            logger.error("Cannot set user authentication: {}", e);
         }
 
-        filterChain.doFilter(httpServletRequest,httpServletResponse);
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
-    private String getJwtFromComingRequest(HttpServletRequest httpServletRequest) {
 
-        String containBearerToken = httpServletRequest.getHeader("Authorization");
-
-        if (StringUtils.hasText("containBearerToken") && containBearerToken.startsWith("Bearer ")){
-            return containBearerToken.substring(7);
-        }
-
-        return containBearerToken;
-    }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface VTokenRepo extends JpaRepository<VerificationToken,Long> {
+public interface VTokenRepo extends JpaRepository<VerificationToken, Long> {
     Optional<VerificationToken> findByTokenString(String token);
 
 }

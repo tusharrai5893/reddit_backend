@@ -20,23 +20,23 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long post_Id;
-    @NotBlank(message = "Post Can't be Empty")
-    private String post_name;
+    @NotBlank(message = "Post name is required")
+    private String postName;
     @Nullable
     private String url;
     @Lob
-    private String description;
-    private Integer vote_count =0;
+    private String postDescription;
+    private Integer voteCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id" , referencedColumnName = "user_Id")
+    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subreddit_Id" , referencedColumnName = "subreddit_Id")
+    @JoinColumn(name = "subreddit_id", referencedColumnName = "subreddit_id")
     private Subreddit subreddit;
 
     private Instant createdDate;
 
-    
+
 }

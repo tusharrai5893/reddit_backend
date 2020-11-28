@@ -20,7 +20,7 @@ public class MailService {
     private final JavaMailSender javaMailSender;
 
     @Async
-     public void sendMail(NotificationEmail notificationEmail) {
+    public void sendMail(NotificationEmail notificationEmail) {
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
             mimeMessageHelper.setFrom("customMail@email.com");
@@ -34,7 +34,7 @@ public class MailService {
             log.info("Activation Email Has been sent to your Mail, Please verify");
 
         } catch (MailException e) {
-            throw new RedditCustomException("Exception occured while sending mail to "+ notificationEmail.getRecipient() );
+            throw new RedditCustomException("Exception occured while sending mail to " + notificationEmail.getRecipient());
         }
 
     }

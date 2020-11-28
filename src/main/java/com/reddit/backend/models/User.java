@@ -21,7 +21,7 @@ public class User {
     private Long user_Id;
     @NotBlank(message = "Username is required")
     @Column(unique = true)
-    private String userName;
+    private String username;
     @NotBlank(message = "Password is required")
     private String password;
     @Email
