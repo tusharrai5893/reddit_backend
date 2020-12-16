@@ -1,6 +1,8 @@
 package com.reddit.backend.service;
 
 import com.reddit.backend.dto.SubredditDto;
+import com.reddit.backend.exceptions.RedditCustomException;
+import com.reddit.backend.mapper.SubredditMapper;
 import com.reddit.backend.models.Subreddit;
 import com.reddit.backend.repository.SubredditRepo;
 import com.reddit.backend.security.JwtProviderService;
@@ -8,7 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,11 +19,13 @@ public class SubredditService {
 
     private final SubredditRepo subredditRepo;
     private final JwtProviderService jwtProviderService;
+    private final SubredditMapper subredditMapper;
 
     @Transactional
     public SubredditDto persistSubreddit(SubredditDto subredditDto) {
 
-        Subreddit persistedSubReddit = subredditRepo.save(mapModelSubredditToDtoPersist(subredditDto));
+        //System.err.println(subredditDto.toString());
+        Subreddit persistedSubReddit = subredditRepo.save(subredditMapper.mapDTOToModel(subredditDto));
         subredditDto.setSubreddit_id(persistedSubReddit.getSubreddit_id());
 
         return subredditDto;
@@ -30,29 +33,19 @@ public class SubredditService {
 
     }
 
-    private Subreddit mapModelSubredditToDtoPersist(SubredditDto dto) {
-        return Subreddit.builder()
-                .subreddit_Name(dto.getSubreddit_Name())
-                .subreddit_Description(dto.getSubreddit_Description())
-                .createdDate(Instant.now())
-                .build();
-    }
-
     @Transactional(readOnly = true)
     public List<SubredditDto> fetchAllSubreddit() {
         return subredditRepo.findAll()
                 .stream()
-                .map(this::mapModelSubredditToDtoFetch)
+                .map(subredditMapper::mapModelToDTO)
                 .collect(Collectors.toList());
 
     }
 
-    private SubredditDto mapModelSubredditToDtoFetch(Subreddit subreddit) {
-        return SubredditDto.builder()
-                .subreddit_id(subreddit.getSubreddit_id())
-                .subreddit_Name(subreddit.getSubreddit_Name())
-                .subreddit_Description(subreddit.getSubreddit_Description())
-                .NoOfPosts(subreddit.getPosts().size())
-                .build();
+    public SubredditDto getSubredditById(Long id) {
+        Subreddit subreddit = subredditRepo.findById(id)
+                .orElseThrow(() -> new RedditCustomException("No Subreddit found with ID = " + id));
+
+        return subredditMapper.mapModelToDTO(subreddit);
     }
 }
