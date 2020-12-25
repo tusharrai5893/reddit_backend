@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,5 +104,17 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String newToken = jwtProviderService.generateJWToken(authenticate);
         return new JwtAuthResDto(newToken, loginRequest.getUsername());
+    }
+
+    public User getCurrentUser() {
+
+        // Getting the logged in user (principal) from Security context  holder
+        org.springframework.security.core.userdetails.User principal =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return userRepo.findByUsername(principal.getUsername())
+                .orElseThrow(()-> new UsernameNotFoundException("User not found with username - "+ principal.getUsername()));
+
+
     }
 }
