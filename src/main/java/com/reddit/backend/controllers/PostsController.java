@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api/post")
 @AllArgsConstructor
 public class PostsController {
 
     private final PostService postService;
 
-    @PostMapping(value = "/add-posts")
+    @PostMapping(value = "/add-post")
     public ResponseEntity createPost(@RequestBody @Valid PostReqDto postReqDto) {
         postService.persistPost(postReqDto);
         return new ResponseEntity(HttpStatus.OK);

@@ -29,41 +29,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-        try {
+
             //Parsing JWT from Oncoming Request
             String jwtFromComingRequest = null;
 
             String containBearerToken = httpServletRequest.getHeader("Authorization");
 
-            if (null != containBearerToken && StringUtils.hasText("containBearerToken")) {
+            if (null == containBearerToken || !StringUtils.hasText("containBearerToken")) {
+
+                filterChain.doFilter(httpServletRequest, httpServletResponse);
+                return;
+
+            } else {
                 jwtFromComingRequest = containBearerToken.substring(7);
-            }
 
+                // Validating Jwt with public key , getting certificate from it
+                boolean validateJwtToken = jwtProviderService.validateJwtToken(jwtFromComingRequest);
 
-            // Validating Jwt with public key , getting certificate from it
-            boolean validateJwtToken = jwtProviderService.validateJwtToken(jwtFromComingRequest);
+                // Extracting Username from UserDetails from its serviceImpl , adding it to Context
 
-            // Extracting Username from UserDetails from its serviceImpl , adding it to Context
+                if (StringUtils.hasText(jwtFromComingRequest) && validateJwtToken) {
+                    String usernameFromJwt = jwtProviderService.getUsernameFromJwt(jwtFromComingRequest);
 
-            if (StringUtils.hasText(jwtFromComingRequest) && validateJwtToken) {
-                String usernameFromJwt = jwtProviderService.getUsernameFromJwt(jwtFromComingRequest);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromJwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromJwt);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
+                    filterChain.doFilter(httpServletRequest, httpServletResponse);
+                }
+            }//ends Else
 
-        } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
-        }
-
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
 

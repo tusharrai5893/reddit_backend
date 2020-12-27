@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MailService {
 
-    private final MailContentBuilder mailContentBuilder;
+    private final CustomMailContentBuilder CustomMailContentBuilder;
     private final JavaMailSender javaMailSender;
 
     @Async
@@ -26,7 +26,9 @@ public class MailService {
             mimeMessageHelper.setFrom("customMail@email.com");
             mimeMessageHelper.setTo(notificationEmail.getRecipient());
             mimeMessageHelper.setSubject(notificationEmail.getSubject());
-            mimeMessageHelper.setText(mailContentBuilder.buildMail(notificationEmail.getBody()));
+
+            mimeMessageHelper.setText(CustomMailContentBuilder.
+                    buildMail(notificationEmail.getBody(),notificationEmail.getLink(),notificationEmail.getMsg()),true);
         };
 
         try {

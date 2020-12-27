@@ -24,10 +24,10 @@ public class PostService {
     public Post persistPost(PostReqDto postReqDto) {
 
         Subreddit subredditName = subredditRepo
-                .findByName(postReqDto.getSubreddit_Name())
-                .orElseThrow(()-> new RedditCustomException(postReqDto.getSubreddit_Name()));
+                .findBySubredditName(postReqDto.getSubredditName())
+                .orElseThrow(()-> new RedditCustomException("No subreddit named " + postReqDto.getSubredditName()));
 
-        return postRepo.save(postMapper.map(postReqDto,subredditName, authService.getCurrentUser()));
+        return postRepo.save(postMapper.mapDTOtoModel(postReqDto,subredditName, authService.getCurrentUser()));
 
     }
 

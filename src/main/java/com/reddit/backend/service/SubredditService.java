@@ -4,6 +4,7 @@ import com.reddit.backend.dto.SubredditDto;
 import com.reddit.backend.exceptions.RedditCustomException;
 import com.reddit.backend.mapper.SubredditMapper;
 import com.reddit.backend.models.Subreddit;
+import com.reddit.backend.models.User;
 import com.reddit.backend.repository.SubredditRepo;
 import com.reddit.backend.security.JwtProviderService;
 import lombok.AllArgsConstructor;
@@ -20,13 +21,14 @@ public class SubredditService {
     private final SubredditRepo subredditRepo;
     private final JwtProviderService jwtProviderService;
     private final SubredditMapper subredditMapper;
+    private final AuthService authService;
 
     @Transactional
     public SubredditDto persistSubreddit(SubredditDto subredditDto) {
 
-        //System.err.println(subredditDto.toString());
-        Subreddit persistedSubReddit = subredditRepo.save(subredditMapper.mapDTOToModel(subredditDto));
-        subredditDto.setSubreddit_id(persistedSubReddit.getSubreddit_id());
+        User currentUser = authService.getCurrentUser();
+        Subreddit persistedSubReddit = subredditRepo.save(subredditMapper.mapDTOToModel(subredditDto,currentUser));
+        subredditDto.setSubredditId(persistedSubReddit.getSubredditId());
 
         return subredditDto;
 

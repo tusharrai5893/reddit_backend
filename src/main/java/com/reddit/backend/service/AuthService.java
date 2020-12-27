@@ -11,6 +11,7 @@ import com.reddit.backend.models.VerificationToken;
 import com.reddit.backend.repository.UserRepo;
 import com.reddit.backend.repository.VTokenRepo;
 import com.reddit.backend.security.JwtProviderService;
+import com.reddit.backend.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,10 +50,12 @@ public class AuthService {
 
         String randomToken = generateVerificationToken(user);
 
-        mailService.sendMail(new NotificationEmail("Activation mail is sent",
+        mailService.sendMail(new NotificationEmail("Activation mail is sent, Please verify 😇😇",
                 user.getEmail(),
-                "Click the link to activate your account for User = " + user.getEmail() + " " +
-                        "http://localhost:8080/api/auth/verifyAccount/" + randomToken));
+                "Please Activate your account by clicking on link",
+                "http://localhost:8080/api/auth/verifyAccount/"+ randomToken,
+                "Click the link to activate your account"
+        ));
 
     }
 
@@ -109,11 +112,11 @@ public class AuthService {
     public User getCurrentUser() {
 
         // Getting the logged in user (principal) from Security context  holder
-        org.springframework.security.core.userdetails.User principal =
-                (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetailsImpl principal =
+                (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return userRepo.findByUsername(principal.getUsername())
-                .orElseThrow(()-> new UsernameNotFoundException("User not found with username - "+ principal.getUsername()));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username - " + principal.getUsername()));
 
 
     }

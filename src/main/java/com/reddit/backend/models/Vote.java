@@ -17,16 +17,16 @@ public class Vote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long vote_Id;
+    private Long voteId;
     private VoteType voteType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_Id", referencedColumnName = "post_Id")
+    @JoinColumn(name = "postId", referencedColumnName = "postId")
     private Post post;
 
 }

@@ -19,14 +19,18 @@ public class Subreddit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long subreddit_id;
+    private long subredditId;
+
     @NotBlank(message = "Subreddit name is required")
-    private String subreddit_Name;
+    private String subredditName;
+
     @NotBlank(message = "Subreddit Description is Required")
-    private String subreddit_Description;
+    private String subredditDescription;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
+
     @OneToMany(fetch = FetchType.LAZY)
     private List<Post> posts;
 

@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SubredditDto {
+public class PostResDto {
 
-    private long subredditId;
+    private String postId;
+    private String postDescription;
+    private String url;
+    private String postName;
+    private String userName;
     private String subredditName;
-    private String subredditDescription;
-    private Integer NoOfPosts;
 }

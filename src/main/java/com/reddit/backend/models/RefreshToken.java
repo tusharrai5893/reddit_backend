@@ -18,8 +18,8 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long r_Token_Id;
-    private String r_Token;
+    private Long rTokenId;
+    private String rToken;
     private Instant createdDate;
 
 }

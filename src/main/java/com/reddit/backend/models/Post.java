@@ -19,7 +19,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_Id;
+    private Long postId;
     @NotBlank(message = "Post name is required")
     private String postName;
     @Nullable
@@ -29,11 +29,11 @@ public class Post {
     private Integer voteCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subreddit_id", referencedColumnName = "subreddit_id")
+    @JoinColumn(name = "subredditId", referencedColumnName = "subredditId")
     private Subreddit subreddit;
 
     private Instant createdDate;

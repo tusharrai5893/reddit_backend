@@ -16,15 +16,15 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long comment_Id;
+    private Long commentId;
     @NotEmpty
-    private String comment_Text;
+    private String commentText;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_Id", referencedColumnName = "post_Id")
+    @JoinColumn(name = "postId", referencedColumnName = "postId")
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_Id", referencedColumnName = "user_Id")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
     private Instant createdDate;
 

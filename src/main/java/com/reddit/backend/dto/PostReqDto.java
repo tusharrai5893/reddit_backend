@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 public class PostReqDto {
 
     private Long postId;
-    private String subreddit_Name;
-    private String post_Name;
+    private String subredditName;
+    private String postName;
     private String url;
-    private String post_Description;
+    private String postDescription;
 
 
 }
