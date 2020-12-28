@@ -1,16 +1,16 @@
 package com.reddit.backend.controllers;
 
 import com.reddit.backend.dto.PostReqDto;
+import com.reddit.backend.dto.PostResDto;
+import com.reddit.backend.mapper.PostMapper;
+import com.reddit.backend.models.Post;
 import com.reddit.backend.service.PostService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -18,10 +18,34 @@ import javax.validation.Valid;
 public class PostsController {
 
     private final PostService postService;
+    private final PostMapper postMapper;
 
     @PostMapping(value = "/add-post")
     public ResponseEntity createPost(@RequestBody @Valid PostReqDto postReqDto) {
-        postService.persistPost(postReqDto);
-        return new ResponseEntity(HttpStatus.OK);
+        Post post = postService.persistPost(postReqDto);
+        return ResponseEntity.status(201).body(postMapper.mapModelToDto(post));
     }
+
+
+    @GetMapping(value = "/fetchAll-post")
+    public ResponseEntity fetchAllPost() {
+        List<PostResDto> postResDtos = postService.fetchAllPost();
+        return ResponseEntity.status(200).body(postResDtos);
+    }
+
+    @GetMapping(value = "/fetchOne-post/{postId}")
+    public ResponseEntity fetchOnePost(@PathVariable Long postId) {
+        PostResDto post = postService.fetchOnePost(postId);
+        return ResponseEntity.status(200).body(post);
+    }
+
+    @GetMapping(value = "/fetchPostBySubreddit-post/{subredditId}")
+    public ResponseEntity fetchSubredditByPost(@PathVariable Long subredditId) {
+        List<PostResDto> post = postService.fetchPostBySubreddit(subredditId);
+        return ResponseEntity.status(200).body(post);
+    }
+
+
+
+
 }
