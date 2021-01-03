@@ -40,9 +40,15 @@ public class PostsController {
     }
 
     @GetMapping(value = "/fetchPostBySubreddit-post/{subredditId}")
-    public ResponseEntity fetchSubredditByPost(@PathVariable Long subredditId) {
+    public ResponseEntity fetchPostBySubreddit(@PathVariable Long subredditId) {
         List<PostResDto> post = postService.fetchPostBySubreddit(subredditId);
         return ResponseEntity.status(200).body(post);
+    }
+
+    @GetMapping(value = "/fetchPostByUsername-post/{username}")
+    public ResponseEntity fetchPostByUsername(@PathVariable String username) {
+        List<PostResDto> posts = postService.fetchPostByUsername(username);
+        return ResponseEntity.status(200).body(posts);
     }
 
 

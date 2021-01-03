@@ -6,8 +6,10 @@ import com.reddit.backend.exceptions.RedditCustomException;
 import com.reddit.backend.mapper.PostMapper;
 import com.reddit.backend.models.Post;
 import com.reddit.backend.models.Subreddit;
+import com.reddit.backend.models.User;
 import com.reddit.backend.repository.PostRepo;
 import com.reddit.backend.repository.SubredditRepo;
+import com.reddit.backend.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class PostService {
 
     private final PostRepo postRepo;
     private final SubredditRepo subredditRepo;
+    private final UserRepo userRepo;
 
     private final AuthService authService;
 
@@ -55,12 +58,22 @@ public class PostService {
         Subreddit subreddit = subredditRepo.findById(subredditId)
                 .orElseThrow(() -> new RedditCustomException("Unable to fetch Subreddit by subreddit Id= " + subredditId));
 
-        List<Post> subredditbyPost = postRepo.findAllBySubreddit(subreddit);
+        List<Post> subredditByPost = postRepo.findAllBySubreddit(subreddit);
 
-        return subredditbyPost.stream()
+        return subredditByPost.stream()
                 .map(postMapper::mapModelToDto)
                 .collect(toList());
 
+
+    }
+
+    public List<PostResDto> fetchPostByUsername(String username) {
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RedditCustomException("No user found for username =" + username));
+
+        return postRepo.findAllByUser(user)
+                .stream().map(postMapper::mapModelToDto)
+                .collect(toList());
 
     }
 }

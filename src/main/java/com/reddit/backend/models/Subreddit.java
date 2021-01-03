@@ -1,9 +1,6 @@
 package com.reddit.backend.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 public class Subreddit {
 
     @Id
@@ -31,8 +29,9 @@ public class Subreddit {
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Post> posts;
+    //non-owning side of relationship
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "subreddit")
+    public List<Post> posts;
 
     private Instant createdDate;
 

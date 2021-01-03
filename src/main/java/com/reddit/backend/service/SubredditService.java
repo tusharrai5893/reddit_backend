@@ -6,7 +6,6 @@ import com.reddit.backend.mapper.SubredditMapper;
 import com.reddit.backend.models.Subreddit;
 import com.reddit.backend.models.User;
 import com.reddit.backend.repository.SubredditRepo;
-import com.reddit.backend.security.JwtProviderService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 public class SubredditService {
 
     private final SubredditRepo subredditRepo;
-    private final JwtProviderService jwtProviderService;
+
     private final SubredditMapper subredditMapper;
     private final AuthService authService;
 
@@ -31,8 +30,6 @@ public class SubredditService {
         subredditDto.setSubredditId(persistedSubReddit.getSubredditId());
 
         return subredditDto;
-
-
     }
 
     @Transactional(readOnly = true)

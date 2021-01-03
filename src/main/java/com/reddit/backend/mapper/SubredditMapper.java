@@ -16,8 +16,8 @@ public interface SubredditMapper {
     @Mapping(target = "NoOfPosts", expression = "java(mapModelNoOfPosts(subreddit.getPosts()))")
     SubredditDto mapModelToDTO(Subreddit subreddit);
 
-    default Integer mapModelNoOfPosts(List<Post> posts) {
-        return posts.size();
+     default Integer mapModelNoOfPosts(List<Post> posts) {
+         return posts.size();
     }
 
     @InheritInverseConfiguration
