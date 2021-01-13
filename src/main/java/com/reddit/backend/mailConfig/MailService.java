@@ -1,7 +1,6 @@
 package com.reddit.backend.mailConfig;
 
 import com.reddit.backend.exceptions.RedditCustomException;
-import com.reddit.backend.models.NotificationEmail;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -23,12 +22,13 @@ public class MailService {
     public void sendMail(NotificationEmail notificationEmail) {
         MimeMessagePreparator preparator = mimeMessage -> {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-            mimeMessageHelper.setFrom("customMail@email.com");
+            mimeMessageHelper.setFrom("customMail@gmail.com");
             mimeMessageHelper.setTo(notificationEmail.getRecipient());
             mimeMessageHelper.setSubject(notificationEmail.getSubject());
 
-            mimeMessageHelper.setText(CustomMailContentBuilder.
-                    buildMail(notificationEmail.getBody(),notificationEmail.getLink(),notificationEmail.getMsg()),true);
+            mimeMessageHelper.setText(
+                    CustomMailContentBuilder.buildMail(notificationEmail.getBody(),notificationEmail.getLink(),notificationEmail.getMsg()),
+                    true);
         };
 
         try {

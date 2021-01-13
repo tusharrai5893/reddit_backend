@@ -5,7 +5,7 @@ import com.reddit.backend.dto.LoginRequest;
 import com.reddit.backend.dto.RegisterRequest;
 import com.reddit.backend.exceptions.RedditCustomException;
 import com.reddit.backend.mailConfig.MailService;
-import com.reddit.backend.models.NotificationEmail;
+import com.reddit.backend.mailConfig.NotificationEmail;
 import com.reddit.backend.models.User;
 import com.reddit.backend.models.VerificationToken;
 import com.reddit.backend.repository.UserRepo;
