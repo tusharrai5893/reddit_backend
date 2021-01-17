@@ -4,10 +4,9 @@ import com.reddit.backend.dto.CommentDto;
 import com.reddit.backend.service.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.ResponseEntity.status;
 
@@ -22,7 +21,21 @@ public class CommentController {
     public ResponseEntity<String> createComment(@RequestBody CommentDto commentDto){
 
         commentService.createComment(commentDto);
+        return status(201).body("Comment posted");
+    }
 
-        return status(201).body("");
+    @GetMapping("/fetchCommentByPost-comment/{postId}")
+    public ResponseEntity<List<CommentDto>> fetchAllCommentByPost(@PathVariable Long postId){
+        List<CommentDto> allCommentsByPost = commentService.fetchAllCommentByPost(postId);
+
+        return status(200).body(allCommentsByPost);
+
+    }
+    @GetMapping("/fetchAllCommentByUser-comment/{userName}")
+    public ResponseEntity<List<CommentDto>> fetchAllCommentByUser(@PathVariable String userName){
+        List<CommentDto> allCommentsByUser = commentService.fetchAllCommentByUser(userName);
+
+        return status(200).body(allCommentsByUser);
+
     }
 }

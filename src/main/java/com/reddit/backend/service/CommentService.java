@@ -14,10 +14,15 @@ import com.reddit.backend.repository.CommentRepo;
 import com.reddit.backend.repository.PostRepo;
 import com.reddit.backend.repository.UserRepo;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepo commentRepo;
@@ -40,12 +45,32 @@ public class CommentService {
         Comment comment = commentMapper.mapDTOtoModel(commentDto, commentOnPost, currentUser);
         commentRepo.save(comment);
 
-        NotificationEmail.builder()
-        .subject(commentOnPost.getUser().getUsername() + "commented on a post")
-        .recipient(commentOnPost.getUser().getEmail())
-        .body(currentUser +"posted a comment on your post !")
-        .link("")
-        .msg("");
+        NotificationEmail msg = new NotificationEmail();
+                msg.setSubject(commentOnPost.getUser().getUsername().toUpperCase() + " commented on a post that you have posted");
+                msg.setRecipient(commentOnPost.getUser().getEmail());
+                msg.setBody(currentUser.getUsername().toUpperCase() + " posted a comment on your post !");
+                msg.setMsg(commentOnPost.getPostName());
+                msg.setLink("http://localhost:8080/api/post/"+ commentDto.getPostId());
 
+        mailService.sendMail(msg);
+    }
+
+    public List<CommentDto> fetchAllCommentByPost(Long postId) {
+
+        Post post = postRepo.findById(postId).orElseThrow(() -> new RedditCustomException("Unable to find post commented on post ID " + postId));
+
+        return commentRepo.findByPost(post)
+                .stream()
+                .map(commentMapper::mapModelToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<CommentDto> fetchAllCommentByUser(String userName) {
+        User user = userRepo.findByUsername(userName).orElseThrow(() -> new RedditCustomException("Unable to find Comment by user " + userName));
+
+        return commentRepo.findAllByUser(user)
+                .stream()
+                .map(commentMapper::mapModelToDto)
+                .collect(Collectors.toList());
     }
 }
