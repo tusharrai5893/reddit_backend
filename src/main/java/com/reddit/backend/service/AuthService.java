@@ -37,6 +37,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProviderService jwtProviderService;
 
+
     @Transactional
     public void signup(RegisterRequest registerRequest) {
         User user = new User();
@@ -53,7 +54,7 @@ public class AuthService {
         mailService.sendMail(new NotificationEmail("Activation mail is sent, Please verify 😇😇",
                 user.getEmail(),
                 "Please Activate your account by clicking on link",
-                "http://localhost:8080/api/auth/verifyAccount/"+ randomToken,
+                "http://localhost:8080/api/auth/verifyAccount/" + randomToken,
                 "Click the link to activate your account"
         ));
 

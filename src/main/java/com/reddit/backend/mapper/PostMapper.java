@@ -13,7 +13,7 @@ public interface PostMapper {
 
     @Mapping(target = "user", source = "currentUser")
     @Mapping(target = "createdDate", expression = "java(java.time.Instant.now())")
-    @Mapping(target = "subreddit" , source = "subredditName")
+    @Mapping(target = "subreddit", source = "subredditName")
     Post mapDTOtoModel(PostReqDto postReqDto, Subreddit subredditName, User currentUser);
 
     @Mapping(target = "subredditName", source = "post.subreddit.subredditName")

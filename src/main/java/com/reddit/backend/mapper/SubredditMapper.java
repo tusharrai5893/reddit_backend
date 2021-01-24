@@ -1,24 +1,34 @@
 package com.reddit.backend.mapper;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.reddit.backend.dto.SubredditDto;
 import com.reddit.backend.models.Post;
 import com.reddit.backend.models.Subreddit;
 import com.reddit.backend.models.User;
+import com.reddit.backend.service.AuthService;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public interface SubredditMapper {
 
-    @Mapping(target = "NoOfPosts", expression = "java(mapModelNoOfPosts(subreddit.getPosts()))")
+    AuthService authService = null;
+
+    @Mapping(target = "NoOfPosts", expression = "java(postList(subreddit.getPosts()))")
     SubredditDto mapModelToDTO(Subreddit subreddit);
 
-     default Integer mapModelNoOfPosts(List<Post> posts) {
-         return posts.size();
+    default List<Post> postList(List<Post> posts) {
+
+        List<Post> p = new ArrayList<>();
+        p.addAll(posts);
+        return p;
     }
+
 
     @InheritInverseConfiguration
     @Mapping(target = "posts", ignore = true)

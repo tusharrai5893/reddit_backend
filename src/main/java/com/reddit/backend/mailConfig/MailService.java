@@ -27,7 +27,7 @@ public class MailService {
             mimeMessageHelper.setSubject(notificationEmail.getSubject());
 
             mimeMessageHelper.setText(
-                    CustomMailContentBuilder.buildMail(notificationEmail.getBody(),notificationEmail.getLink(),notificationEmail.getMsg()),
+                    CustomMailContentBuilder.buildMail(notificationEmail.getBody(), notificationEmail.getLink(), notificationEmail.getMsg()),
                     true);
         };
 

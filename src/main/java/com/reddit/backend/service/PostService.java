@@ -34,9 +34,9 @@ public class PostService {
     public Post persistPost(PostReqDto postReqDto) {
         Subreddit subredditName = subredditRepo
                 .findBySubredditName(postReqDto.getSubredditName())
-                .orElseThrow(()-> new RedditCustomException("No subreddit named " + postReqDto.getSubredditName()));
+                .orElseThrow(() -> new RedditCustomException("No subreddit named " + postReqDto.getSubredditName()));
 
-        return postRepo.save(postMapper.mapDTOtoModel(postReqDto,subredditName, authService.getCurrentUser()));
+        return postRepo.save(postMapper.mapDTOtoModel(postReqDto, subredditName, authService.getCurrentUser()));
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +51,7 @@ public class PostService {
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new RedditCustomException(new StringBuilder().append("No post found for the id=").append(postId).toString()));
 
-       return postMapper.mapModelToDto(post);
+        return postMapper.mapModelToDto(post);
     }
 
     public List<PostResDto> fetchPostBySubreddit(Long subredditId) {

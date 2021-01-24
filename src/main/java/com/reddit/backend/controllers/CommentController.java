@@ -18,21 +18,22 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/add-comment")
-    public ResponseEntity<String> createComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<String> createComment(@RequestBody CommentDto commentDto) {
 
         commentService.createComment(commentDto);
         return status(201).body("Comment posted");
     }
 
     @GetMapping("/fetchCommentByPost-comment/{postId}")
-    public ResponseEntity<List<CommentDto>> fetchAllCommentByPost(@PathVariable Long postId){
+    public ResponseEntity<List<CommentDto>> fetchAllCommentByPost(@PathVariable Long postId) {
         List<CommentDto> allCommentsByPost = commentService.fetchAllCommentByPost(postId);
 
         return status(200).body(allCommentsByPost);
 
     }
+
     @GetMapping("/fetchAllCommentByUser-comment/{userName}")
-    public ResponseEntity<List<CommentDto>> fetchAllCommentByUser(@PathVariable String userName){
+    public ResponseEntity<List<CommentDto>> fetchAllCommentByUser(@PathVariable String userName) {
         List<CommentDto> allCommentsByUser = commentService.fetchAllCommentByUser(userName);
 
         return status(200).body(allCommentsByUser);

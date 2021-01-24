@@ -39,18 +39,18 @@ public class CommentService {
     public void createComment(CommentDto commentDto) {
 
         Post commentOnPost = postRepo.findById(commentDto.getPostId())
-                .orElseThrow(() -> new RedditCustomException("No post found by ID= "+ commentDto.getPostId().toString()));
+                .orElseThrow(() -> new RedditCustomException("No post found by ID= " + commentDto.getPostId().toString()));
 
         User currentUser = authService.getCurrentUser();
         Comment comment = commentMapper.mapDTOtoModel(commentDto, commentOnPost, currentUser);
         commentRepo.save(comment);
 
         NotificationEmail msg = new NotificationEmail();
-                msg.setSubject(commentOnPost.getUser().getUsername().toUpperCase() + " commented on a post that you have posted");
-                msg.setRecipient(commentOnPost.getUser().getEmail());
-                msg.setBody(currentUser.getUsername().toUpperCase() + " posted a comment on your post !");
-                msg.setMsg(commentOnPost.getPostName());
-                msg.setLink("http://localhost:8080/api/post/"+ commentDto.getPostId());
+        msg.setSubject(commentOnPost.getUser().getUsername().toUpperCase() + " commented on a post that you have posted");
+        msg.setRecipient(commentOnPost.getUser().getEmail());
+        msg.setBody(currentUser.getUsername().toUpperCase() + " posted a comment on your post !");
+        msg.setMsg(commentOnPost.getPostName());
+        msg.setLink("http://localhost:8080/api/post/" + commentDto.getPostId());
 
         mailService.sendMail(msg);
     }

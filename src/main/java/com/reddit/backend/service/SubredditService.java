@@ -26,7 +26,7 @@ public class SubredditService {
     public SubredditDto persistSubreddit(SubredditDto subredditDto) {
 
         User currentUser = authService.getCurrentUser();
-        Subreddit persistedSubReddit = subredditRepo.save(subredditMapper.mapDTOToModel(subredditDto,currentUser));
+        Subreddit persistedSubReddit = subredditRepo.save(subredditMapper.mapDTOToModel(subredditDto, currentUser));
         subredditDto.setSubredditId(persistedSubReddit.getSubredditId());
 
         return subredditDto;

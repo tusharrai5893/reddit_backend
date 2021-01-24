@@ -1,9 +1,12 @@
 package com.reddit.backend.dto;
 
+import com.reddit.backend.models.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +17,5 @@ public class SubredditDto {
     private long subredditId;
     private String subredditName;
     private String subredditDescription;
-    private Integer NoOfPosts;
+    private List<Post> NoOfPosts;
 }

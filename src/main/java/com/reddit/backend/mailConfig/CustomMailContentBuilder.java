@@ -13,7 +13,7 @@ public class CustomMailContentBuilder {
 
     private final TemplateEngine templateEngine;
 
-    public String buildMail(String body,String link,String msg) {
+    public String buildMail(String body, String link, String msg) {
         Context context = new Context();
         context.setVariable("body", body);
         context.setVariable("link", link);

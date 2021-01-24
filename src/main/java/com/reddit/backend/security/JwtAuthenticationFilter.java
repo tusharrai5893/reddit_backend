@@ -30,40 +30,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-            //Parsing JWT from Oncoming Request
-            String jwtFromComingRequest = null;
+        //Parsing JWT from Oncoming Request
+        String jwtFromComingRequest = null;
 
-            String containBearerToken = httpServletRequest.getHeader("Authorization");
+        String containBearerToken = httpServletRequest.getHeader("Authorization");
 
-            if (null == containBearerToken || !StringUtils.hasText("containBearerToken")) {
+        if (null == containBearerToken || !StringUtils.hasText("containBearerToken")) {
+
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+
+        } else {
+            jwtFromComingRequest = containBearerToken.substring(7);
+
+            // Validating Jwt with public key , getting certificate from it
+            boolean validateJwtToken = jwtProviderService.validateJwtToken(jwtFromComingRequest);
+
+            // Extracting Username from UserDetails from its serviceImpl , adding it to Context
+
+            if (StringUtils.hasText(jwtFromComingRequest) && validateJwtToken) {
+                String usernameFromJwt = jwtProviderService.getUsernameFromJwt(jwtFromComingRequest);
+
+                UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromJwt);
+
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
+
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
                 filterChain.doFilter(httpServletRequest, httpServletResponse);
-                return;
-
-            } else {
-                jwtFromComingRequest = containBearerToken.substring(7);
-
-                // Validating Jwt with public key , getting certificate from it
-                boolean validateJwtToken = jwtProviderService.validateJwtToken(jwtFromComingRequest);
-
-                // Extracting Username from UserDetails from its serviceImpl , adding it to Context
-
-                if (StringUtils.hasText(jwtFromComingRequest) && validateJwtToken) {
-                    String usernameFromJwt = jwtProviderService.getUsernameFromJwt(jwtFromComingRequest);
-
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromJwt);
-
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities()
-                    );
-
-                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-                    filterChain.doFilter(httpServletRequest, httpServletResponse);
-                }
-            }//ends Else
+            }
+        }//ends Else
 
     }
 
