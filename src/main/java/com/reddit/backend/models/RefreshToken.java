@@ -1,6 +1,8 @@
 package com.reddit.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,12 +16,15 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rTokenId;
     private String rToken;
+
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
     private Instant createdDate;
 
 }

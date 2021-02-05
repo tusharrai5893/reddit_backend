@@ -1,13 +1,17 @@
 package com.reddit.backend.controllers;
 
 import com.reddit.backend.dto.JwtAuthResDto;
-import com.reddit.backend.dto.LoginRequest;
-import com.reddit.backend.dto.RegisterRequest;
+import com.reddit.backend.dto.LoginRequestDto;
+import com.reddit.backend.dto.RefreshTokenRequestDto;
+import com.reddit.backend.dto.RegisterRequestDto;
 import com.reddit.backend.service.AuthService;
+import com.reddit.backend.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequestMapping("/api/auth")
 @RestController
@@ -16,9 +20,11 @@ public class AuthController {
 
     private final AuthService authService;
 
+    private final RefreshTokenService refreshTokenService;
+
     @PostMapping(value = "/signup")
-    public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
-        authService.signup(registerRequest);
+    public ResponseEntity<String> signup(@RequestBody RegisterRequestDto registerRequestDto) {
+        authService.signup(registerRequestDto);
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.OK);
 
     }
@@ -30,9 +36,22 @@ public class AuthController {
     }
 
     @PostMapping(value = "/login")
-    public JwtAuthResDto login(@RequestBody LoginRequest loginRequest) {
-        return authService.login(loginRequest);
+    public JwtAuthResDto login(@RequestBody LoginRequestDto loginRequestDto) {
+        return authService.login(loginRequestDto);
     }
+
+    @PostMapping(value = "/refreshToken")
+    public JwtAuthResDto refreshToken(@Valid @RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
+        return authService.refreshToken(refreshTokenRequestDto);
+    }
+
+    @PostMapping(value = "/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
+        refreshTokenService.deleteRefreshToken(refreshTokenRequestDto.getRefreshToken());
+        return ResponseEntity.status(200).body("Refresh Token Deleted");
+    }
+
+
 
 
 }

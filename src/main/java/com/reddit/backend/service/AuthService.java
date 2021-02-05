@@ -1,15 +1,16 @@
 package com.reddit.backend.service;
 
 import com.reddit.backend.dto.JwtAuthResDto;
-import com.reddit.backend.dto.LoginRequest;
-import com.reddit.backend.dto.RegisterRequest;
+import com.reddit.backend.dto.LoginRequestDto;
+import com.reddit.backend.dto.RefreshTokenRequestDto;
+import com.reddit.backend.dto.RegisterRequestDto;
 import com.reddit.backend.exceptions.RedditCustomException;
 import com.reddit.backend.mailConfig.MailService;
 import com.reddit.backend.mailConfig.NotificationEmail;
 import com.reddit.backend.models.User;
 import com.reddit.backend.models.VerificationToken;
 import com.reddit.backend.repository.UserRepo;
-import com.reddit.backend.repository.VTokenRepo;
+import com.reddit.backend.repository.VerificationTokenRepo;
 import com.reddit.backend.security.JwtProviderService;
 import com.reddit.backend.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
@@ -31,19 +32,24 @@ import java.util.UUID;
 public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
+
     private final UserRepo userRepo;
-    private final VTokenRepo vTokenRepo;
+    private final VerificationTokenRepo verificationTokenRepo;
+
     private final MailService mailService;
-    private final AuthenticationManager authenticationManager;
     private final JwtProviderService jwtProviderService;
+    private final RefreshTokenService refreshTokenService;
+
+    private final AuthenticationManager authenticationManager;
+
 
 
     @Transactional
-    public void signup(RegisterRequest registerRequest) {
+    public void signup(RegisterRequestDto registerRequestDto) {
         User user = new User();
-        user.setEmail(registerRequest.getEmail());
-        user.setUsername(registerRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setEmail(registerRequestDto.getEmail());
+        user.setUsername(registerRequestDto.getUsername());
+        user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
         user.setCreatedDate(Instant.now());
         user.setEnabled(false);
 
@@ -68,14 +74,14 @@ public class AuthService {
         verificationToken.setUser(user);
         verificationToken.setExpiryDate(Instant.now());
 
-        vTokenRepo.save(verificationToken);
+        verificationTokenRepo.save(verificationToken);
 
         return token;
     }
 
     @Transactional
     public void mailVerifyAccount(String token) {
-        Optional<VerificationToken> tokenString = vTokenRepo.findByTokenString(token);
+        Optional<VerificationToken> tokenString = verificationTokenRepo.findByTokenString(token);
         tokenString.orElseThrow(() -> new RedditCustomException("Invalid Token Fetched from Repo"));
 
         // get the user and make him enabled
@@ -100,15 +106,20 @@ public class AuthService {
 
     }
 
-    public JwtAuthResDto login(LoginRequest loginRequest) {
+    public JwtAuthResDto login(LoginRequestDto loginRequestDto) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getUsername(),
-                loginRequest.getPassword()
+                loginRequestDto.getUsername(),
+                loginRequestDto.getPassword()
         ));
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String newToken = jwtProviderService.generateJWToken(authenticate);
-        return new JwtAuthResDto(newToken, loginRequest.getUsername());
+        return JwtAuthResDto.builder()
+                .JwtToken(newToken)
+                .userName(loginRequestDto.getUsername())
+                .refreshToken(refreshTokenService.generateRefreshToken().getRToken())
+                .expiresAt(Instant.now().plusMillis(jwtProviderService.getJwtExpirationTimeInMillis()))
+                .build();
     }
 
     public User getCurrentUser() {
@@ -121,5 +132,18 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username - " + principal.getUsername()));
 
 
+    }
+
+    public JwtAuthResDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
+
+        refreshTokenService.validateRefreshToken(refreshTokenRequestDto.getRefreshToken());
+        String tokenByUsername = jwtProviderService.generateRefreshJWToken(refreshTokenRequestDto.getUsername());
+
+        return JwtAuthResDto.builder()
+                .JwtToken(tokenByUsername)
+                .refreshToken(refreshTokenRequestDto.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProviderService.getJwtExpirationTimeInMillis()))
+                .userName(refreshTokenRequestDto.getUsername())
+                .build();
     }
 }
