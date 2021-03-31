@@ -19,14 +19,18 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
     @NotBlank(message = "Username is required")
     @Column(unique = true)
     private String username;
+
     @NotBlank(message = "Password is required")
     private String password;
+
     @Email
     @NotEmpty(message = "Email is mandatory")
     private String email;
+
     private Boolean enabled;
     private Instant createdDate;
 

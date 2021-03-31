@@ -24,7 +24,7 @@ public class RefreshToken {
     private Long rTokenId;
     private String rToken;
 
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss")
+    @JsonFormat(pattern = "dd-MM-yyyy hh:mm Z")
     private Instant createdDate;
 
 }

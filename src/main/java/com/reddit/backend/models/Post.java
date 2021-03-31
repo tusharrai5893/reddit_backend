@@ -1,6 +1,7 @@
 package com.reddit.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -33,7 +34,7 @@ public class Post implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
-    @JsonBackReference
+    @JsonIgnore
     private User user;
 
     //Owning side of relationship

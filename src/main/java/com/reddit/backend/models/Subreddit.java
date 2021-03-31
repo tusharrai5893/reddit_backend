@@ -1,5 +1,6 @@
 package com.reddit.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -34,7 +35,7 @@ public class Subreddit implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
-    @JsonManagedReference
+    @JsonIgnore
     private User user;
 
     private Instant createdDate;
