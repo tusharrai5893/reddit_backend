@@ -11,11 +11,11 @@ import java.io.Serializable;
 import java.time.Instant;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @ToString
+@Builder
 public class Post implements Serializable {
 
     @Id
