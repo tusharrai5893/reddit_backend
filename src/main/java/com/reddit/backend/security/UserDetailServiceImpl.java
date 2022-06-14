@@ -21,7 +21,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
         Optional<User> singleUser = userRepo.findByUsername(userName);
         User user1 = singleUser.orElseThrow(() -> new UsernameNotFoundException("No User found for Username : " + userName));
 
-
         return new UserDetailsImpl(user1);
 
     }
