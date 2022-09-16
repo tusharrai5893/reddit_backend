@@ -4,6 +4,7 @@ import com.reddit.backend.dto.JwtAuthResDto;
 import com.reddit.backend.dto.LoginRequestDto;
 import com.reddit.backend.dto.RefreshTokenRequestDto;
 import com.reddit.backend.dto.RegisterRequestDto;
+import com.reddit.backend.models.User;
 import com.reddit.backend.service.AuthService;
 import com.reddit.backend.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RequestMapping("/api/auth")
 @RestController
@@ -23,9 +25,13 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<String> signup(@RequestBody RegisterRequestDto registerRequestDto) {
-        authService.signup(registerRequestDto);
-        return new ResponseEntity<>("User Registered Successfully", HttpStatus.OK);
+    public ResponseEntity<?> signup(@RequestBody RegisterRequestDto registerRequestDto) {
+        //authService.signup(registerRequestDto);
+        return authService.signup(registerRequestDto)
+                .map(ResponseEntity::ok)
+                .orElse(new ResponseEntity<>(HttpStatus.CONFLICT));
+
+        //return new ResponseEntity<>("User Registered Successfully", HttpStatus.OK);
 
     }
 

@@ -1,5 +1,6 @@
 package com.reddit.backend.service;
 
+import com.reddit.backend.config.AppConfig;
 import com.reddit.backend.dto.JwtAuthResDto;
 import com.reddit.backend.dto.LoginRequestDto;
 import com.reddit.backend.dto.RefreshTokenRequestDto;
@@ -14,6 +15,7 @@ import com.reddit.backend.repository.VerificationTokenRepo;
 import com.reddit.backend.security.JwtProviderService;
 import com.reddit.backend.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,29 +43,43 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
 
     private final AuthenticationManager authenticationManager;
+    private final AppConfig appConfig;
 
 
 
     @Transactional
-    public void signup(RegisterRequestDto registerRequestDto) {
-        User user = new User();
-        user.setEmail(registerRequestDto.getEmail());
-        user.setUsername(registerRequestDto.getUsername());
-        user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
-        user.setCreatedDate(Instant.now());
-        user.setEnabled(false);
+    public Optional<User> signup(RegisterRequestDto registerRequestDto) {
+        Optional<User> savedUser = null;
 
-        userRepo.save(user);
+        try {
+            User user = new User();
+            user.setEmail(registerRequestDto.getEmail());
+            user.setUsername(registerRequestDto.getUsername());
+            user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
+            user.setCreatedDate(Instant.now());
+            user.setEnabled(false);
 
-        String randomToken = generateVerificationToken(user);
+             savedUser=userRepo.saveUser(user);
 
-        mailService.sendMail(new NotificationEmail("Activation mail is sent, Please verify 😇😇",
-                user.getEmail(),
-                "Please Activate your account by clicking on link",
-                "http://localhost:8080/api/auth/verifyAccount/" + randomToken,
-                "Click the link to activate your account"
-        ));
+            String randomToken = generateVerificationToken(user);
 
+            mailService.sendMail(new NotificationEmail("Activation mail is sent, Please verify 😇😇",
+                    user.getEmail(),
+                    "Please Activate your account by clicking on link",
+                     appConfig.getAppUrl()+"/api/auth/verifyAccount/" + randomToken,
+                    "Click the link to activate your account"
+            ));
+
+
+        }
+        catch (Exception e){
+            System.out.println("in catch block");
+            e.getLocalizedMessage();
+
+        }
+
+
+        return savedUser;
     }
 
     private String generateVerificationToken(User user) {

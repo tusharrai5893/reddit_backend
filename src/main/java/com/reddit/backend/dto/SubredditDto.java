@@ -16,7 +16,7 @@ import java.util.List;
 public class SubredditDto implements Serializable {
 
     private long subredditId;
-    private String subredditName;
+    private transient String subredditName;
     private String subredditDescription;
     private List<Post> NoOfPosts;
 }

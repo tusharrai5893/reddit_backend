@@ -21,7 +21,7 @@ public class PostsController {
     private final PostMapper postMapper;
 
     @PostMapping(value = "/add-post")
-    public ResponseEntity createPost(@RequestBody @Valid PostReqDto postReqDto) {
+    public ResponseEntity<PostResDto> createPost(@RequestBody @Valid PostReqDto postReqDto) {
         Post post = postService.persistPost(postReqDto);
         return ResponseEntity.status(201).body(postMapper.mapModelToDto(post));
     }
@@ -30,6 +30,7 @@ public class PostsController {
     @GetMapping(value = "/fetchAll-post")
     public ResponseEntity fetchAllPost() {
         List<PostResDto> postResDtos = postService.fetchAllPost();
+        //postResDtos.stream().forEach(e-> System.err.print(e));
         return ResponseEntity.status(200).body(postResDtos);
     }
 

@@ -14,6 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "reddit_users")
 public class User {
 
     @Id
