@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +16,9 @@ import java.util.List;
 public class SubredditDto implements Serializable {
 
     private long subredditId;
-    private transient String subredditName;
+    private String subredditName;
     private String subredditDescription;
-    private List<Post> NoOfPosts;
+    private Set<Post> NoOfPosts;
+    private String loggedInUser;
+
 }

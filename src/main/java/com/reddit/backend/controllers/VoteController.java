@@ -17,7 +17,7 @@ public class VoteController {
     private final VoteService voteService;
 
     @PostMapping("/doVote")
-    public ResponseEntity doVote(@RequestBody VoteDto voteDto){
+    public ResponseEntity doVote(@RequestBody VoteDto voteDto) {
         voteService.doVote(voteDto);
         return ResponseEntity.status(200).body(String.format("you have %s'd for the post.", voteDto.getVoteType()));
     }

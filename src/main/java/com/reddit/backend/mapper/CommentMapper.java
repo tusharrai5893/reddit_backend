@@ -1,5 +1,6 @@
 package com.reddit.backend.mapper;
 
+import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.reddit.backend.dto.CommentDto;
 import com.reddit.backend.models.Comment;
 import com.reddit.backend.models.Post;
@@ -17,5 +18,13 @@ public interface CommentMapper {
 
     @Mapping(target = "postId", expression = "java(comment.getPost().getPostId())")
     @Mapping(target = "commentedUsername", expression = "java(comment.getUser().getUsername())")
+    @Mapping(target = "comments", expression = "java(comment.getChildren() != null ? comment.getChildren() : null)")
+    @Mapping(target = "createdDate", expression = "java(getPostDuration(comment))")
     CommentDto mapModelToDto(Comment comment);
+
+    default String getPostDuration(Comment comment) {
+        return TimeAgo.using(comment.getCreatedDate().toEpochMilli());
+    }
+
+
 }

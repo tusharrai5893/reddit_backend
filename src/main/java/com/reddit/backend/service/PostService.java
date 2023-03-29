@@ -10,17 +10,18 @@ import com.reddit.backend.models.User;
 import com.reddit.backend.repository.PostRepo;
 import com.reddit.backend.repository.SubredditRepo;
 import com.reddit.backend.repository.UserRepo;
+import com.reddit.backend.utilities.Utility;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
-@Transactional(rollbackFor = Exception.class)
 public class PostService {
 
     private final PostRepo postRepo;
@@ -31,6 +32,7 @@ public class PostService {
 
     private final PostMapper postMapper;
 
+    @Transactional(rollbackFor = Exception.class)
     public Post persistPost(PostReqDto postReqDto) {
         Subreddit subredditName = subredditRepo
                 .findBySubredditName(postReqDto.getSubredditName())
@@ -41,8 +43,21 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResDto> fetchAllPost() {
-        return postRepo.findAll()
-                .stream().map(postMapper::mapModelToDto)
+        List<Post> postRepo1 = postRepo.findAll();
+        return postRepo1
+                .stream()
+                .sorted((o1, o2) -> {
+                    int compare = o2.getCreatedDate().compareTo(o1.getCreatedDate());
+                    if (compare == 0)
+                        return o1.getPostId().compareTo(o2.getPostId());
+                    return compare;
+                })
+                .map(post -> {
+                            Utility.removeRedundantComments(new HashSet<>(), post.getComments());
+                            return postMapper.mapModelToDto(post);
+
+                        }
+                )
                 .collect(toList());
     }
 
@@ -50,7 +65,7 @@ public class PostService {
     public PostResDto fetchOnePost(Long postId) {
         Post post = postRepo.findById(postId)
                 .orElseThrow(() -> new RedditCustomException(new StringBuilder().append("No post found for the id=").append(postId).toString()));
-
+        Utility.removeRedundantComments(new HashSet<>(), post.getComments());
         return postMapper.mapModelToDto(post);
     }
 
@@ -61,6 +76,12 @@ public class PostService {
         List<Post> subredditByPost = postRepo.findAllBySubreddit(subreddit);
 
         return subredditByPost.stream()
+                .sorted((o1, o2) -> {
+                    int compare = o2.getCreatedDate().compareTo(o1.getCreatedDate());
+                    if (compare == 0)
+                        return o1.getPostId().compareTo(o2.getPostId());
+                    return compare;
+                })
                 .map(postMapper::mapModelToDto)
                 .collect(toList());
 

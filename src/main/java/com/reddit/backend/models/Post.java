@@ -2,21 +2,29 @@ package com.reddit.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString
 @Builder
-public class Post implements Serializable {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Post implements Serializable, Comparable<Post> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +51,29 @@ public class Post implements Serializable {
     @JsonBackReference
     private Subreddit subreddit;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "post")
+//    @JoinColumn(name = "fk_postId_commentTbl", referencedColumnName = "postId")
+//    @JsonManagedReference
+    @JsonIgnore
+    private Set<Comment> comments = new TreeSet<>();
+
     private Instant createdDate;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return postId.equals(post.postId);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(postId);
+    }
+
+    @Override
+    public int compareTo(@NotNull Post that) {
+        return 0;
+    }
 }

@@ -16,7 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
 
     @Bean
-    public Docket redditCloneAPIDoc(){
+    public Docket redditCloneAPIDoc() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.any())
@@ -30,7 +30,7 @@ public class SwaggerConfig {
                 .title("Reddit Clone API DOC")
                 .version("0.1")
                 .description("Documentation of reddit API")
-                .contact(new Contact("Tushar Rai","",""))
+                .contact(new Contact("Tushar Rai", "", ""))
                 .license("MIT")
                 .build();
     }

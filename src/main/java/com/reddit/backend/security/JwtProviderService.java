@@ -22,13 +22,11 @@ import static java.util.Date.from;
 @Service
 public class JwtProviderService {
 
-    private KeyStore keyStore;
-
-    @Value("${jwt.expire.time}")
-    private long jwtExpirationTimeInMillis;
-
     //Secret pass for jks file
     private static final String SECRET = "secret";
+    private KeyStore keyStore;
+    @Value("${jwt.expire.time}")
+    private long jwtExpirationTimeInMillis;
 
     @PostConstruct
     public void init() {

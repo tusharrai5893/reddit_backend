@@ -24,6 +24,15 @@ public class CommentController {
         return status(201).body("Comment posted");
     }
 
+    @GetMapping("/fetchAll-comment")
+    public ResponseEntity<List<CommentDto>> getAllComment() {
+
+        List<CommentDto> allComment = commentService.getAllComment();
+
+        return status(200).body((allComment));
+
+    }
+
     @GetMapping("/fetchCommentByPost-comment/{postId}")
     public ResponseEntity<List<CommentDto>> fetchAllCommentByPost(@PathVariable Long postId) {
         List<CommentDto> allCommentsByPost = commentService.fetchAllCommentByPost(postId);
@@ -39,4 +48,5 @@ public class CommentController {
         return status(200).body(allCommentsByUser);
 
     }
+
 }

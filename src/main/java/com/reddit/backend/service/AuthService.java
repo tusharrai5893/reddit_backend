@@ -15,7 +15,6 @@ import com.reddit.backend.repository.VerificationTokenRepo;
 import com.reddit.backend.security.JwtProviderService;
 import com.reddit.backend.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +45,6 @@ public class AuthService {
     private final AppConfig appConfig;
 
 
-
     @Transactional
     public Optional<User> signup(RegisterRequestDto registerRequestDto) {
         Optional<User> savedUser = null;
@@ -59,20 +57,19 @@ public class AuthService {
             user.setCreatedDate(Instant.now());
             user.setEnabled(false);
 
-             savedUser=userRepo.saveUser(user);
+            savedUser = userRepo.saveUser(user);
 
             String randomToken = generateVerificationToken(user);
 
-            mailService.sendMail(new NotificationEmail("Activation mail is sent, Please verify 😇😇",
+            mailService.sendMail(new NotificationEmail("Activation mail is sent, Please verify",
                     user.getEmail(),
                     "Please Activate your account by clicking on link",
-                     appConfig.getAppUrl()+"/api/auth/verifyAccount/" + randomToken,
+                    appConfig.getUrl() + "/api/auth/verifyAccount/" + randomToken,
                     "Click the link to activate your account"
             ));
 
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("in catch block");
             e.getLocalizedMessage();
 

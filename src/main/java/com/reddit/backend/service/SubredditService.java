@@ -34,17 +34,21 @@ public class SubredditService {
 
     @Transactional(readOnly = true)
     public List<SubredditDto> fetchAllSubreddit() {
+        String currentUser = authService.getCurrentUser().getUsername();
         return subredditRepo.findAll()
                 .stream()
-                .map(subredditMapper::mapModelToDTO)
+                .map(e -> {
+                    return subredditMapper.mapModelToDTO(e, currentUser);
+                })
                 .collect(Collectors.toList());
 
     }
 
     public SubredditDto getSubredditById(Long id) {
+        String currentUser = authService.getCurrentUser().getUsername();
         Subreddit subreddit = subredditRepo.findById(id)
                 .orElseThrow(() -> new RedditCustomException("No Subreddit found with ID = " + id));
 
-        return subredditMapper.mapModelToDTO(subreddit);
+        return subredditMapper.mapModelToDTO(subreddit, currentUser);
     }
 }

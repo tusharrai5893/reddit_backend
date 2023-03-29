@@ -1,20 +1,27 @@
 package com.reddit.backend.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Data
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
-public class Comment {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Comment implements Serializable, Comparable<Comment> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,12 +32,42 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId", referencedColumnName = "postId")
+    @JsonIgnore
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
+    @JsonBackReference
     private User user;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
+    private Set<Comment> children = new TreeSet<>(); // children
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Comment parent;
 
     private Instant createdDate;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return commentId.equals(comment.commentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(commentId);
+    }
+
+
+    @Override
+    public int compareTo(@NotNull Comment that) {
+        int compare = this.createdDate.compareTo(that.createdDate);
+        if (compare == 0)
+            return this.commentId.compareTo(that.commentId);
+        return compare;
+    }
 }

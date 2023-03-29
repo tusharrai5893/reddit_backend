@@ -18,7 +18,7 @@ public class JwtAuthResDto {
 
     //New fields for refresh token
 
-    private String  refreshToken;
+    private String refreshToken;
     private Instant expiresAt;
 
 }

@@ -30,6 +30,7 @@ public class PostsController {
     @GetMapping(value = "/fetchAll-post")
     public ResponseEntity fetchAllPost() {
         List<PostResDto> postResDtos = postService.fetchAllPost();
+
         //postResDtos.stream().forEach(e-> System.err.print(e));
         return ResponseEntity.status(200).body(postResDtos);
     }

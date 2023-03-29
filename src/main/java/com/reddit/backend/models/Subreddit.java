@@ -1,6 +1,7 @@
 package com.reddit.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -8,7 +9,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
+import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @Data
 @Builder
@@ -16,16 +19,20 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Subreddit implements Serializable {
 
+
     //non-owning side of relationship
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subreddit")
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "subreddit")
     @JsonManagedReference
-    public List<Post> posts;
+    @OrderBy("createdDate")
+    public SortedSet<Post> posts = new TreeSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long subredditId;
+
 
     @NotBlank(message = "Subreddit name is required")
     private String subredditName;
@@ -40,5 +47,17 @@ public class Subreddit implements Serializable {
 
     private Instant createdDate;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Subreddit subreddit = (Subreddit) o;
+        return subredditId == subreddit.subredditId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(subredditId);
+    }
 
 }

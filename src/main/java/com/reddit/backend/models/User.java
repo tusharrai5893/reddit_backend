@@ -1,5 +1,7 @@
 package com.reddit.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @Entity
 @Table(name = "reddit_users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
@@ -26,6 +29,7 @@ public class User {
     private String username;
 
     @NotBlank(message = "Password is required")
+    @JsonIgnore
     private String password;
 
     @Email

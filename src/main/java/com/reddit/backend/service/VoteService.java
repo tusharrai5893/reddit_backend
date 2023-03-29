@@ -33,19 +33,19 @@ public class VoteService {
 
         Optional<Vote> topByPostAndUser = voteRepo.findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser());
 
-        if(topByPostAndUser.isPresent() && topByPostAndUser.get().getVoteType().equals(voteDto.getVoteType())) {
+        if (topByPostAndUser.isPresent() && topByPostAndUser.get().getVoteType().equals(voteDto.getVoteType())) {
             throw new RedditCustomException(
                     String.format("You have already %s'd for the post.", voteDto.getVoteType())
             );
         }
 
-        if (UPVOTE.equals(voteDto.getVoteType())){
-            post.setVoteCount(post.getVoteCount()  + 1);
-        }else{
+        if (UPVOTE.equals(voteDto.getVoteType())) {
+            post.setVoteCount(post.getVoteCount() + 1);
+        } else {
             post.setVoteCount(post.getVoteCount() - 1);
         }
 
-        voteRepo.save(voteMapper.mapDtoToModel(voteDto,post, authService.getCurrentUser()));
+        voteRepo.save(voteMapper.mapDtoToModel(voteDto, post, authService.getCurrentUser()));
         postRepo.save(post);
     }
 }

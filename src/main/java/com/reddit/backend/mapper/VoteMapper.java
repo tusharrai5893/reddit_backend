@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public interface VoteMapper {
 
     @Mapping(target = "voteId", ignore = true)
@@ -17,7 +18,7 @@ public interface VoteMapper {
     @Mapping(target = "post", source = "post")
     Vote mapDtoToModel(VoteDto voteDto, Post post, User user);
 
-    default VoteType getVoteType(VoteDto voteDto){
+    default VoteType getVoteType(VoteDto voteDto) {
         System.out.print(voteDto.getVoteType());
         return voteDto.getVoteType();
     }
