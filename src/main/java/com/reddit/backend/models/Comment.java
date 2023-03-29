@@ -14,12 +14,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-@Data
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
+@Getter
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Comment implements Serializable, Comparable<Comment> {
 
