@@ -16,5 +16,4 @@ public class AppConfig {
     @NotNull
     private String url;
 
-
 }
